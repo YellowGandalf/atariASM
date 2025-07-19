@@ -1,8 +1,8 @@
 ;Trzeci program V.3.1
 
-	        org $2000
+	              org $2000
 
-        ; Wstaw napis "Wynik: "
+        ; Napis: Wynik:
         lda #55    ; 'W'
         sta 40010
         lda #57    ; 'y'
@@ -15,46 +15,36 @@
         sta 40014
         lda #26    ; ':'
         sta 40015
-        lda #0
-        sta 40016  ; spacja
-        sta 40017
+        lda #0     ; spacja
+        sta 40016
 
         ; Dodawanie 5 + 7
         lda #5
         clc
-        adc #7       ; wynik = 12
-        sta wynik
+        adc #7      ; wynik = 12
 
-        ; Oblicz dziesiątki
-        lda wynik
-        ldy #0
-Loop10:
-        cmp #10
-        blt GotTens
+        ; Rozbijanie na dziesiątki i jedności
         sec
-        sbc #10
-        iny
-        bne Loop10
-GotTens:
-        sty dzies
-        sta jedn
+        sbc #10     ; sprawdzamy, czy wynik >= 10
+        bcc mniej10
 
-        ; Zamiana na ATASCII: dodaj 16
-        lda dzies
+        ; Jeśli wynik >= 10, mamy dziesiątkę i jedność
+        sta $80     ; zapisz jedności (12 - 10 = 2)
+        lda #16+1   ; dziesiątka = '1'
+        sta 40017
+        lda $80
         clc
-        adc #16
-        sta 40016     ; dziesiątki
+        adc #16     ; jedność = '2'
+        sta 40018
+        jmp koniec
 
-        lda jedn
+mniej10:
+        ; Jeśli wynik < 10
         clc
-        adc #16
-        sta 40017     ; jedności
+        adc #10     ; przywróć wynik (bo odejmowaliśmy 10)
+        clc
+        adc #16     ; zamiana na ATASCII
+        sta 40017   ; wypisz jedną cyfrę
 
-        jmp $A000
-
-wynik:  .byte 0
-dzies:  .byte 0
-jedn:   .byte 0
-
-
-        jmp $a000     ; skok do Atari Basic
+koniec:
+        jmp $A000   ; powrót do BASIC-a
