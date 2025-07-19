@@ -1,10 +1,7 @@
 ; Nasz pierwszy program
 
-		org $2000 		;miejsce w RAM
-
-		          		;start i petla to etykity
-
-start		PLA
+		    org $2000 		;miejsce w RAM
+            	          		
 			lda #40   	;zapamietaj liczbe 
 			sta 40458  	;zapisz do komorki 
 
@@ -17,16 +14,10 @@ start		PLA
 
 			lda #47 
 			sta 40462
+
+			jmp $a000   ;skok do Atari Basic
 		       
 			
-			jmp $a000   ;skok do Atari Basic
+			
 
-			;rts   ;reset
-			;jmp $E474       ; powrót do BASIC-a (wejście RESET do BASIC-a)
-
-
-
-;petla		jmp petla 	;zapetlenie programu
-
-	;	run start 		;informacja ze ma realizowac program 
-						;od start
+		

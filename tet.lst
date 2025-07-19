@@ -1,0 +1,25 @@
+mads 2.1.5
+Source: test.asm
+     1 				; Nasz pierwszy program
+     2
+     3 						    org $2000 		;miejsce w RAM
+     4
+     5 FFFF> 2000-2019> 4C 00 +             jmp $a000   ;skok do Atari Basic
+     6 						          		
+     7 2003 A9 28					lda #40   	;zapamietaj liczbe 
+     8 2005 8D 0A 9E					sta 40458  	;zapisz do komorki 
+     9
+    10 2008 A9 25					lda #37 
+    11 200A 8D 0B 9E					sta 40459
+    12
+    13 200D A9 2C					lda #44 
+    14 200F 8D 0C 9E					sta 40460
+    15 2012 8D 0D 9E					sta 40461
+    16
+    17 2015 A9 2F					lda #47 
+    18 2017 8D 0E 9E					sta 40462
+    19 						       
+    20 							
+    21 							
+    22
+    23 						
