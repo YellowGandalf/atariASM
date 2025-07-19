@@ -1,6 +1,6 @@
 mads 2.1.5
 Source: test.asm
-     1 							;Drugi program V.2.3
+     1 							;Drugi program V.2.4
      2
      3 						org $2000
      4
@@ -21,7 +21,7 @@ Source: test.asm
     19 201E A9 05		        lda #5
     20 2020 18			        clc
     21 2021 69 03		        adc #3
-    22 2023 69 30		        adc #'0'      ; Zamiana liczby na kod ASCII
+    22 2023 69 10		        adc #16      ; Zamiana liczby na kod ASCII
     23 2025 8D 50 9C		        sta 40016    ; Wstawienie cyfry po napisie "Wynik:"
     24
     25 2028 4C 00 A0		        jmp $a000     ; skok do Atari Basic
