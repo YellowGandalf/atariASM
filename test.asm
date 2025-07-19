@@ -59,7 +59,7 @@ WaitRelease2:
         ldy #0         ; Y = dziesiątki
 Loop10:
         cmp #10
-        blt GotDigits
+        bcc GotDigits ; jeśli A< 10 -> przejdz dalej (bcc - branch if carry clear)
         sec
         sbc #10
         iny

@@ -1,27 +1,92 @@
 mads 2.1.5
 Source: test.asm
-     1 							;Drugi program V.2.4
-     2
-     3 						org $2000
+     1 				;Czwarty program V.4.1
+     2 				; dodaje większe liczby z których wynik jest dwucyfrowy lub większy
+     3 				; działa poprawnie dla dowolnych liczb 0–99 (np. pobieranych z klawiatury)
      4
-     5 FFFF> 2000-202A> A9 37	        lda #55
-     6 2002 8D 4A 9C		        sta 40010
-     7 2005 A9 39		        lda #57
-     8 2007 8D 4B 9C		        sta 40011
-     9 200A A9 2E		        lda #46
-    10 200C 8D 4C 9C		        sta 40012
-    11 200F A9 29		        lda #41
-    12 2011 8D 4D 9C		        sta 40013
-    13 2014 A9 2B		        lda #43
-    14 2016 8D 4E 9C		        sta 40014
-    15 2019 A9 1A		        lda #26
-    16 201B 8D 4F 9C		        sta 40015
-    17
-    18 				        ; Dodawanie 5 + 3
-    19 201E A9 05		        lda #5
-    20 2020 18			        clc
-    21 2021 69 03		        adc #3
-    22 2023 69 10		        adc #16      ; Zamiana liczby na kod ASCII
-    23 2025 8D 50 9C		        sta 40016    ; Wstawienie cyfry po napisie "Wynik:"
-    24
-    25 2028 4C 00 A0		        jmp $a000     ; skok do Atari Basic
+     5 					           org $2000
+     6
+     7 				        ; Wyświetl napis "Wynik: "
+     8 FFFF> 2000-2083> A9 37	        lda #55        ; 'W'
+     9 2002 8D 4A 9C		        sta $9C4A      ; 40010
+    10 2005 A9 39		        lda #57        ; 'y'
+    11 2007 8D 4B 9C		        sta $9C4B
+    12 200A A9 2E		        lda #46        ; 'n'
+    13 200C 8D 4C 9C		        sta $9C4C
+    14 200F A9 29		        lda #41        ; 'i'
+    15 2011 8D 4D 9C		        sta $9C4D
+    16 2014 A9 2B		        lda #43        ; 'k'
+    17 2016 8D 4E 9C		        sta $9C4E
+    18 2019 A9 1A		        lda #26        ; ':'
+    19 201B 8D 4F 9C		        sta $9C4F
+    20 201E A9 00		        lda #0         ; spacja
+    21 2020 8D 50 9C		        sta $9C50
+    22
+    23 				        ; === Wczytaj pierwszą cyfrę z klawiatury ===
+    24 2023			GetKey1:
+    25 2023 AD 0F D2		        lda $D20F      ; sprawdź znak z klawiatury
+    26 2026 C9 FF		        cmp #255
+    27 2028 F0 F9		        beq GetKey1    ; jeśli nic nie wciśnięto, czekaj
+    28 202A 38			        sec
+    29 202B E9 10		        sbc #16        ; zamiana z ATASCII na cyfrę (np. '3' = 19 → 3)
+    30 202D 8D 7F 20		        sta liczba1
+    31
+    32 2030			WaitRelease1:
+    33 2030 AD 0F D2		        lda $D20F
+    34 2033 C9 FF		        cmp #255
+    35 2035 D0 F9		        bne WaitRelease1
+    36
+    37 				        ; === Wczytaj drugą cyfrę z klawiatury ===
+    38 2037			GetKey2:
+    39 2037 AD 0F D2		        lda $D20F
+    40 203A C9 FF		        cmp #255
+    41 203C F0 F9		        beq GetKey2
+    42 203E 38			        sec
+    43 203F E9 10		        sbc #16
+    44 2041 8D 80 20		        sta liczba2
+    45
+    46 2044			WaitRelease2:
+    47 2044 AD 0F D2		        lda $D20F
+    48 2047 C9 FF		        cmp #255
+    49 2049 D0 F9		        bne WaitRelease2
+    50
+    51 				        ; === Dodawanie ===
+    52 204B 18			        clc
+    53 204C AD 7F 20		        lda liczba1
+    54 204F 6D 80 20		        adc liczba2    ; wynik = liczba1 + liczba2
+    55 2052 8D 81 20		        sta suma
+    56
+    57 				        ; === Rozbij na dziesiątki i jedności ===
+    58 2055 AD 81 20		        lda suma
+    59 2058 A0 00		        ldy #0         ; Y = dziesiątki
+    60 205A			Loop10:
+    61 205A C9 0A		        cmp #10
+    62 205C 90 06		        bcc GotDigits ; jeśli A< 10 -> przejdz dalej (bcc - branch if carry clear)
+    63 205E 38			        sec
+    64 205F E9 0A		        sbc #10
+    65 2061 C8			        iny
+    66 2062 D0 F6		        bne Loop10
+    67 2064			GotDigits:
+    68 2064 8C 82 20		        sty dzies
+    69 2067 8D 83 20		        sta jedn
+    70
+    71 				        ; === Wyświetl wynik na ekranie ===
+    72 206A AD 82 20		        lda dzies
+    73 206D 18			        clc
+    74 206E 69 10		        adc #16        ; zamiana na ATASCII
+    75 2070 8D 51 9C		        sta $9C51      ; 40017
+    76
+    77 2073 AD 83 20		        lda jedn
+    78 2076 18			        clc
+    79 2077 69 10		        adc #16
+    80 2079 8D 52 9C		        sta $9C52      ; 40018
+    81
+    82 207C 4C 00 A0		        jmp $A000      ; Powrót do BASIC
+    83 				        
+    84
+    85 				; === Zmienne pomocnicze ===
+    86 207F 00			liczba1: .byte 0
+    87 2080 00			liczba2: .byte 0
+    88 2081 00			suma:    .byte 0
+    89 2082 00			dzies:   .byte 0
+    90 2083 00			jedn:    .byte 0
