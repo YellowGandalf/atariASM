@@ -1,50 +1,90 @@
-;Trzeci program V.3.1
+;Czwarty program V.4.1
+; dodaje większe liczby z których wynik jest dwucyfrowy lub większy
+; działa poprawnie dla dowolnych liczb 0–99 (np. pobieranych z klawiatury)
 
-	              org $2000
+	           org $2000
 
-        ; Napis: Wynik:
-        lda #55    ; 'W'
-        sta 40010
-        lda #57    ; 'y'
-        sta 40011
-        lda #46    ; 'n'
-        sta 40012
-        lda #41    ; 'i'
-        sta 40013
-        lda #43    ; 'k'
-        sta 40014
-        lda #26    ; ':'
-        sta 40015
-        lda #0     ; spacja
-        sta 40016
+        ; Wyświetl napis "Wynik: "
+        lda #55        ; 'W'
+        sta $9C4A      ; 40010
+        lda #57        ; 'y'
+        sta $9C4B
+        lda #46        ; 'n'
+        sta $9C4C
+        lda #41        ; 'i'
+        sta $9C4D
+        lda #43        ; 'k'
+        sta $9C4E
+        lda #26        ; ':'
+        sta $9C4F
+        lda #0         ; spacja
+        sta $9C50
 
-        ; Dodawanie 5 + 7
-        lda #5
-        clc
-        adc #7      ; wynik = 12
-
-        ; Rozbijanie na dziesiątki i jedności
+        ; === Wczytaj pierwszą cyfrę z klawiatury ===
+GetKey1:
+        lda $D20F      ; sprawdź znak z klawiatury
+        cmp #255
+        beq GetKey1    ; jeśli nic nie wciśnięto, czekaj
         sec
-        sbc #10     ; sprawdzamy, czy wynik >= 10
-        bcc mniej10
+        sbc #16        ; zamiana z ATASCII na cyfrę (np. '3' = 19 → 3)
+        sta liczba1
 
-        ; Jeśli wynik >= 10, mamy dziesiątkę i jedność
-        sta $80     ; zapisz jedności (12 - 10 = 2)
-        lda #16+1   ; dziesiątka = '1'
-        sta 40017
-        lda $80
-        clc
-        adc #16     ; jedność = '2'
-        sta 40018
-        jmp koniec
+WaitRelease1:
+        lda $D20F
+        cmp #255
+        bne WaitRelease1
 
-mniej10:
-        ; Jeśli wynik < 10
-        clc
-        adc #10     ; przywróć wynik (bo odejmowaliśmy 10)
-        clc
-        adc #16     ; zamiana na ATASCII
-        sta 40017   ; wypisz jedną cyfrę
+        ; === Wczytaj drugą cyfrę z klawiatury ===
+GetKey2:
+        lda $D20F
+        cmp #255
+        beq GetKey2
+        sec
+        sbc #16
+        sta liczba2
 
-koniec:
-        jmp $A000   ; powrót do BASIC-a
+WaitRelease2:
+        lda $D20F
+        cmp #255
+        bne WaitRelease2
+
+        ; === Dodawanie ===
+        clc
+        lda liczba1
+        adc liczba2    ; wynik = liczba1 + liczba2
+        sta suma
+
+        ; === Rozbij na dziesiątki i jedności ===
+        lda suma
+        ldy #0         ; Y = dziesiątki
+Loop10:
+        cmp #10
+        blt GotDigits
+        sec
+        sbc #10
+        iny
+        bne Loop10
+GotDigits:
+        sty dzies
+        sta jedn
+
+        ; === Wyświetl wynik na ekranie ===
+        lda dzies
+        clc
+        adc #16        ; zamiana na ATASCII
+        sta $9C51      ; 40017
+
+        lda jedn
+        clc
+        adc #16
+        sta $9C52      ; 40018
+
+        jmp $A000      ; Powrót do BASIC
+        
+
+; === Zmienne pomocnicze ===
+liczba1: .byte 0
+liczba2: .byte 0
+suma:    .byte 0
+dzies:   .byte 0
+jedn:    .byte 0
