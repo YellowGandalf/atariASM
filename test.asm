@@ -1,4 +1,4 @@
-			;Drugi program
+			;Drugi program V.1.0
 
 		    org $2000 		
             	          		
