@@ -1,25 +1,27 @@
 mads 2.1.5
 Source: test.asm
-     1 				; Nasz pierwszy program
+     1 							;Drugi program V.2.3
      2
-     3 						    org $2000 		;miejsce w RAM
+     3 						org $2000
      4
-     5 FFFF> 2000-2019> 4C 00 +             jmp $a000   ;skok do Atari Basic
-     6 						          		
-     7 2003 A9 28					lda #40   	;zapamietaj liczbe 
-     8 2005 8D 0A 9E					sta 40458  	;zapisz do komorki 
-     9
-    10 2008 A9 25					lda #37 
-    11 200A 8D 0B 9E					sta 40459
-    12
-    13 200D A9 2C					lda #44 
-    14 200F 8D 0C 9E					sta 40460
-    15 2012 8D 0D 9E					sta 40461
-    16
-    17 2015 A9 2F					lda #47 
-    18 2017 8D 0E 9E					sta 40462
-    19 						       
-    20 							
-    21 							
-    22
-    23 						
+     5 FFFF> 2000-202A> A9 37	        lda #55
+     6 2002 8D 4A 9C		        sta 40010
+     7 2005 A9 39		        lda #57
+     8 2007 8D 4B 9C		        sta 40011
+     9 200A A9 2E		        lda #46
+    10 200C 8D 4C 9C		        sta 40012
+    11 200F A9 29		        lda #41
+    12 2011 8D 4D 9C		        sta 40013
+    13 2014 A9 2B		        lda #43
+    14 2016 8D 4E 9C		        sta 40014
+    15 2019 A9 1A		        lda #26
+    16 201B 8D 4F 9C		        sta 40015
+    17
+    18 				        ; Dodawanie 5 + 3
+    19 201E A9 05		        lda #5
+    20 2020 18			        clc
+    21 2021 69 03		        adc #3
+    22 2023 69 30		        adc #'0'      ; Zamiana liczby na kod ASCII
+    23 2025 8D 50 9C		        sta 40016    ; Wstawienie cyfry po napisie "Wynik:"
+    24
+    25 2028 4C 00 A0		        jmp $a000     ; skok do Atari Basic
