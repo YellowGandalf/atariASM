@@ -1,23 +1,34 @@
-			;Drugi program V.2.1
+			;Drugi program V.2.2
 
-		    org $2000 		
-            	          		
-			lda #40   	
-			sta 40458  	
+		   					; Program w asemblerze MADS dla Atari 8-bit
+							; Dodaje 5 + 3 i wyświetla wynik jako "Wynik: 8" od adresu ekranu $9C40
 
-			lda #37 
-			sta 40459
+        org $2000          ; Punkt startowy programu
 
-			lda #44 
-			sta 40460
-			sta 40461
+Start:
+        clc                ; Wyczyść znacznik przeniesienia
+        lda #5             ; Załaduj pierwszą liczbę
+        adc #3             ; Dodaj drugą liczbę
+        sta wynik          ; Zachowaj wynik
 
-			lda #47 
-			sta 40462
+        ldx #0             ; Indeks do pętli zapisu napisu
+Loop:
+        lda tekst,x        ; Pobierz znak z tablicy tekst
+        beq Done           ; Jeśli napotkano 0 (koniec tekstu), zakończ
+        sta $9C40,x        ; Zapisz znak do pamięci ekranu (40000)
+        inx
+        bne Loop
 
-			jmp $a000   ;skok do Atari Basic
-		       
-			
-			
+Done:
+        lda wynik
+        clc
+        adc #'0'           ; Zamień cyfrę na kod ASCII
+        sta $9C40+7        ; Umieść cyfrę jako ostatni znak ("Wynik: 8")
 
-		
+        rts                ; Zakończ program
+
+tekst:
+        .byte "Wynik: ",0  ; Tekst z zakończeniem zerowym
+
+wynik:
+        .byte 0            ; Tu będzie wynik dodawania
