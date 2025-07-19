@@ -1,9 +1,9 @@
-; Nasz pierwszy program
+			;Drugi program
 
-		    org $2000 		;miejsce w RAM
+		    org $2000 		
             	          		
-			lda #40   	;zapamietaj liczbe 
-			sta 40458  	;zapisz do komorki 
+			lda #40   	
+			sta 40458  	
 
 			lda #37 
 			sta 40459
